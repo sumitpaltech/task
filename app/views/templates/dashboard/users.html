@@ -1,0 +1,299 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}User Management - Task Management{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0">User Management</h4>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-success">
+                        <i class="ti ti-user-plus me-1"></i>Add New User
+                    </a>
+                    <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">
+                        <i class="ti ti-arrow-left me-1"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Security Warning -->
+            <div class="alert alert-info border-info">
+                <div class="d-flex align-items-start">
+                    <i class="ti ti-shield-check fs-24 text-info me-3 mt-1"></i>
+                    <div>
+                        <h6 class="alert-heading mb-2">🔐 Admin-Only User Management</h6>
+                        <p class="mb-2">You have administrative access to manage users. Passwords are securely hashed and cannot be viewed.</p>
+                        <ul class="mb-0 small">
+                            <li><strong>Reset Password:</strong> Generate a new secure password for users who forgot theirs</li>
+                            <li><strong>View Details:</strong> See complete user information</li>
+                            <li><strong>Delete User:</strong> Permanently remove user accounts (use with caution)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">All Users ({{ users|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Department</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <!-- <th>Actions</th> -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.id }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar avatar-sm bg-primary-transparent rounded-circle me-2">
+                                                    <span class="avatar-title text-primary">
+                                                        {{ user.name[0]|upper if user.name else '?' }}
+                                                    </span>
+                                                </div>
+                                                <span>{{ user.name }}</span>
+                                            </div>
+                                        </td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ user.department or 'N/A' }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'danger' if user.role == 'admin' else 'secondary' }}">
+                                                {{ user.role|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if user.status == 1 else 'warning' }}">
+                                                {{ 'Active' if user.status == 1 else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</td>
+                                        <!-- <td>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-sm btn-warning" onclick="resetPassword({{ user.id }}, '{{ user.name }}')" title="Reset Password">
+                                                    <i class="ti ti-key"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-info" onclick="viewUserDetails({{ user.id }})" title="View Details">
+                                                    <i class="ti ti-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="deleteUser({{ user.id }}, '{{ user.name }}')" title="Delete User">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td> -->
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="ti ti-users-off fs-48 text-muted mb-3"></i>
+                            <h5 class="text-muted">No users found</h5>
+                            <p class="text-muted">Start by adding your first user.</p>
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">
+                                <i class="ti ti-user-plus me-1"></i>Add First User
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="userDetailsContent">
+                <!-- User details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function viewUserDetails(userId) {
+    // For now, just show an alert. In a real app, you'd fetch user details via AJAX
+    alert('View user details for ID: ' + userId);
+}
+
+function editUser(userId) {
+    // For now, just show an alert. In a real app, you'd redirect to edit page
+    alert('Edit user ID: ' + userId);
+}
+
+function deleteUser(userId, userName) {
+    if (confirm('Are you sure you want to delete user "' + userName + '"? This action cannot be undone.')) {
+        // For now, just show an alert. In a real app, you'd make an AJAX call to delete
+        alert('Delete user ID: ' + userId);
+    }
+}
+
+function confirmReset(userName) {
+    return confirm('Are you sure you want to reset the password for "' + userName + '"?\n\nA new secure password will be generated.');
+}
+
+function resetPassword(userId, userName) {
+    // Create password reset confirmation modal
+    const modalHtml = `
+        <div class="modal fade" id="resetModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reset Password - ${userName}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="ti ti-alert-triangle me-2"></i>
+                            <strong>Password Reset</strong>
+                        </div>
+                        <p>Are you sure you want to reset the password for <strong>${userName}</strong>?</p>
+                        <ul class="small">
+                            <li>A new secure password will be generated</li>
+                            <li>The old password will no longer work</li>
+                            <li>You should share the new password with the user securely</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="ti ti-x me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="confirmPasswordReset(${userId}, '${userName}')">
+                            <i class="ti ti-key me-1"></i>Reset Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('resetModal');
+    if (existingModal) existingModal.remove();
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('resetModal'));
+    modal.show();
+}
+
+function confirmPasswordReset(userId, userName) {
+    // Hide the confirmation modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('resetModal'));
+    modal.hide();
+    
+    // Submit the form
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/dashboard/users/reset-password/${userId}`;
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function showFullHash(fullHash, userName) {
+    // Create a modal to show the full hash
+    const modalHtml = `
+        <div class="modal fade" id="hashModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Password Hash - ${userName}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger">
+                            <i class="ti ti-alert-triangle"></i>
+                            <strong>Security Warning:</strong> This hash cannot be reversed to get the original password. 
+                            Only share with trusted security personnel.
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="${fullHash}" readonly id="hashInput">
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyHash('${fullHash}')">
+                                <i class="ti ti-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('hashModal');
+    if (existingModal) existingModal.remove();
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('hashModal'));
+    modal.show();
+}
+
+function copyHash(hash) {
+    navigator.clipboard.writeText(hash).then(function() {
+        // Show success message
+        const toastHtml = `
+            <div class="toast align-items-center text-white bg-success border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="ti ti-check me-2"></i>Hash copied to clipboard!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        
+        const toast = new bootstrap.Toast(toastContainer.lastElementChild);
+        toast.show();
+    });
+}
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.className = 'toast-container position-fixed top-0 end-0 p-3';
+    container.style.zIndex = '9999';
+    document.body.appendChild(container);
+    return container;
+}
+
+</script>
+{% endblock %}

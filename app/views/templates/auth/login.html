@@ -16,8 +16,8 @@
 
             <form action="{{ url_for('auth.login') }}" method="POST">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold">Email</label>
-                    <input type="email" name="email" class="form-control" placeholder="you@email.com" required>
+                    <label class="form-label fw-semibold">Username or Email</label>
+                    <input type="text" name="username_or_email" class="form-control" placeholder="username or email" required>
                 </div>
                 <div class="mb-4">
                     <label class="form-label fw-semibold">Password</label>

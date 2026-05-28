@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial;">
+
+<h2>📋 Daily Task Report</h2>
+
+<h3>Summary</h3>
+<ul>
+    <li><b>Total Tasks:</b> {{ data.total }}</li>
+    <li><b>Completed:</b> {{ data.completed }} ({{ data.completed_pct }}%)</li>
+    <li><b>Pending:</b> {{ data.pending }} ({{ data.pending_pct }}%)</li>
+</ul>
+
+<h3>⏳ Pending Tasks</h3>
+
+{% if data.pending_tasks %}
+<table style="border-collapse: collapse; width:100%;">
+    <tr style="background:#f2f2f2;">
+        <th style="padding:8px;border:1px solid #ddd;">Task Title</th>
+        <th style="padding:8px;border:1px solid #ddd;">Due Date</th>
+    </tr>
+
+    {% for task in data.pending_tasks %}
+    <tr>
+        <td style="padding:8px;border:1px solid #ddd;">{{ task.title }}</td>
+        <td style="padding:8px;border:1px solid #ddd;">
+            {{ task.due_date if task.due_date else 'No Date' }}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No pending tasks 🎉</p>
+{% endif %}
+
+<p style="margin-top:20px;">Please complete pending tasks on priority.</p>
+
+</body>
+</html>

@@ -14,6 +14,5 @@ from app import create_app
 
 if __name__ == '__main__':
     app = create_app()
-    app.run(host='0.0.0.0', port=8000, debug=True)
-    # Listen on 0.0.0.0 to be accessible on 192.168.3.223
+    #
     app.run(host='0.0.0.0', port=7001, debug=True)

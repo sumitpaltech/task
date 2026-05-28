@@ -1,0 +1,86 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h3 class="mb-4">Tasks of {{ username }}</h3>
+
+    {% set total = tasks|length %}
+    {% set completed = tasks | selectattr("status", "equalto", "completed") | list | length %}
+    {% set pending = tasks | selectattr("status", "equalto", "pending") | list | length %}
+
+    <!-- ================= SUMMARY CARDS ================= -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Total Tasks</h6>
+                    <h4>{{ total }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Completed</h6>
+                    <h4 class="text-success">{{ completed }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h4 class="text-warning">{{ pending }}</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= TASK TABLE ================= -->
+    <table class="table table-bordered table-striped">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <th>Completion Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.user_mail }}</td>
+
+                <td>
+                    {% if task.status == 'completed' %}
+                        <span class="badge bg-success">Completed</span>
+                    {% elif task.status == 'pending' %}
+                        <span class="badge bg-warning">Pending</span>
+                    {% else %}
+                        <span class="badge bg-info">{{ task.status }}</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ task.priority }}</td>
+                <td>{{ task.start_date }}</td>
+                <td>{{ task.due_date }}</td>
+                <td>{{ task.completion_date or '-' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+{% endblock %}

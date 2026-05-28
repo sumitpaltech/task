@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.Python
+
+# Virtual envs (NEVER include — huge!)
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Docs (not needed in image)
+*.md
+
+# Logs (don't bake into image)
+*.log
+output.log
+security_audit.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# DevOps stuff
+Dockerfile
+.dockerignore
+Jenkinsfile
+k8s/
+scripts/
+terraform/
+ansible/
+
+# Secrets — must come from K8s, not baked in
+.env
+
+# Test
+.pytest_cache/
+.coverage

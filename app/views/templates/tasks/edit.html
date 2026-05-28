@@ -11,7 +11,7 @@
 
 <div class="card border-0 shadow-sm" style="max-width: 680px;">
     <div class="card-body p-4">
-        <form action="{{ url_for('task.update', id=task.id) }}" method="POST">
+        <form action="{{ url_for('task.update', id=task.id) }}" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
                 <input type="text" name="title" class="form-control" value="{{ task.title }}" required>
@@ -20,6 +20,48 @@
             <div class="mb-3">
                 <label class="form-label fw-semibold">Description</label>
                 <textarea name="description" class="form-control" rows="4">{{ task.description or '' }}</textarea>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Category</label>
+                    <input type="text" name="category" class="form-control" value="{{ task.category or 'General' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Department</label>
+                    <input type="text" name="department" class="form-control" value="{{ task.department or '' }}">
+                </div>
+            </div>
+
+            {% if session.get('role') == 'admin' %}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Assigned To (username)</label>
+                    <input type="text" name="assigned_to" class="form-control" value="{{ task.assigned_to or '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Assigned Email</label>
+                    <input type="email" name="user_mail" class="form-control" value="{{ task.user_mail or '' }}">
+                </div>
+            </div>
+            {% else %}
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Assigned To</label>
+                    <input type="text" class="form-control" value="{{ task.assigned_to or '' }}" readonly>
+                    <input type="hidden" name="assigned_to" value="{{ task.assigned_to or '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Assigned Email</label>
+                    <input type="email" class="form-control" value="{{ task.user_mail or '' }}" readonly>
+                    <input type="hidden" name="user_mail" value="{{ task.user_mail or '' }}">
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Team Member</label>
+                <input type="text" name="team_member" class="form-control" value="{{ task.team_member or '' }}">
             </div>
 
             <div class="row g-3 mb-3">
@@ -41,9 +83,33 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Due Date</label>
-                    <input type="date" name="due_date" class="form-control"
+                    <input type="date" name="due_date" class="form-control" {% if session.get('role') != 'admin' %}readonly{% endif %}
                            value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
                 </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" {% if session.get('role') != 'admin' %}readonly{% endif %}
+                           value="{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Completion Date</label>
+                    <input type="date" name="completion_date" class="form-control" {% if session.get('role') != 'admin' %}readonly{% endif %}
+                           value="{{ task.completion_date.strftime('%Y-%m-%d') if task.completion_date else '' }}">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Remarks</label>
+                <textarea name="remarks" class="form-control" rows="3">{{ task.remarks or '' }}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Attach File</label>
+                <input type="file" name="file_upload" class="form-control" accept=".pdf,.doc,.docx,.xlsx,.xls,.jpg,.jpeg,.png,.txt,.zip">
+                <small class="text-muted">Allowed: PDF, Word, Excel, Images, TXT, ZIP (Max 10 MB)</small>
             </div>
 
             <div class="d-flex gap-2 pt-2">

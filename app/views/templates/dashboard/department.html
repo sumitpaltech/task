@@ -1,0 +1,172 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- ================================
+        DEPARTMENT HEADER
+    ================================ -->
+    <h3 class="mb-4">{{ dept }} Department</h3>
+
+    {% set data = dept_stats[dept] %}
+
+    <!-- ================================
+        DEPARTMENT SUMMARY CARDS
+    ================================ -->
+    <div class="row mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Total Tasks</h6>
+                    <h4>{{ data.total }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Completed</h6>
+                    <h4 class="text-success">{{ data.completed }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h4 class="text-warning">{{ data.pending }}</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <!-- ================================
+        USER PERFORMANCE SECTION
+    ================================ -->
+    <h5 class="mb-3">Users Performance</h5>
+
+    {% if users|length == 0 %}
+        <div class="alert alert-info text-center">
+            No user data present in this department.
+        </div>
+    {% else %}
+
+    <div class="row">
+
+        {% for user in users %}
+
+            {# SAFETY CHECK: prevent BuildError #}
+            {% if user.username %}
+
+            {% set stats = user_stats.get(user.username, {}) %}
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+
+                        <!-- USER NAME -->
+                        <h6>
+                            <a href="{{ url_for('dashboard.user_tasks', username=user.username) }}"
+                               style="text-decoration:none;">
+                                {{ user.username }}
+                            </a>
+                        </h6>
+
+                        <!-- EMAIL -->
+                        <small class="text-muted d-block mb-2">
+                            {{ user.email or 'No Email' }}
+                        </small>
+
+                        <!-- DONUT CHART -->
+                        <div id="chart-{{ user.username }}" style="height: 200px;"></div>
+
+                        <!-- TEXT SUMMARY -->
+                        <div class="mt-2 fw-bold">
+                            <span class="text-warning">{{ stats.pending or 0 }} Pending</span> |
+                            <span class="text-success">{{ stats.completed or 0 }} Done</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+<!-- ================================
+    CHART SCRIPT SECTION
+=============================== -->
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script>
+
+const userStats = {{ user_stats | tojson }};
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    Object.entries(userStats).forEach(([username, data]) => {
+
+        const el = document.getElementById(`chart-${username}`);
+
+        if (!el) return;
+
+        new ApexCharts(el, {
+            chart: {
+                type: 'donut',
+                height: 200
+            },
+
+            series: [
+                data.pending || 0,
+                data.completed || 0,
+                data.in_progress || 0,
+                data.cancelled || 0
+            ],
+
+            labels: ['Pending', 'Completed', 'In Progress', 'Cancelled'],
+
+            colors: ['#ff9f43', '#28c76f', '#00cfe8', '#ea5455'],
+
+            legend: { show: false },
+
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%',
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                formatter: () => data.total || 0
+                            }
+                        }
+                    }
+                }
+            }
+        }).render();
+
+    });
+
+});
+
+</script>
+{% endblock %}
+
+{% endblock %}

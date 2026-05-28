@@ -228,16 +228,36 @@ All 6 templates follow this pattern:
 ```sql
 id INT (PK, AUTO_INCREMENT)
 name VARCHAR(100)
-email VARCHAR(150) UNIQUE
+username VARCHAR(100) UNIQUE
+email VARCHAR(150)
 password VARCHAR(255) (bcrypt hash)
+role VARCHAR(50) DEFAULT 'user'
+department VARCHAR(100)
+status TINYINT(1) DEFAULT 1
 created_at DATETIME
 updated_at DATETIME
 ```
 
-### tasks table
+### task_tracker table
 ```sql
 id INT (PK, AUTO_INCREMENT)
-user_id INT (FK → users.id)
+title VARCHAR(200)
+description TEXT
+category VARCHAR(100) DEFAULT 'General'
+department VARCHAR(100)
+assigned_to VARCHAR(100)
+user_mail VARCHAR(255)
+team_member VARCHAR(100)
+priority ENUM('low','medium','high') DEFAULT 'medium'
+start_date DATE
+due_date DATE
+completion_date DATE
+status ENUM('pending','in_progress','completed') DEFAULT 'pending'
+remarks TEXT
+file_attachment TEXT
+created_at DATETIME
+updated_at DATETIME
+```
 title VARCHAR(200)
 description TEXT
 status ENUM('pending','in_progress','completed')

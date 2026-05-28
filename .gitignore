@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+
+# Virtual envs
+venv/
+.venv/
+env/
+
+# Environment / secrets — NEVER commit
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+output.log
+security_audit.log
+
+# Uploads (belong in S3)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Backups
+*.sql.gz
+backups/
+
+# Terraform local state
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+
+# Ansible
+ansible/inventory.ini
+jenkins-credentials.txt
+
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+output.log
+security_audit.log
