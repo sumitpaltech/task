@@ -91,13 +91,12 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 sh '''
-                    sleep 5
-                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://${K8S_HOST}:30050/healthz || echo "000")
-                    echo "Health check returned: ${HTTP_CODE}"
-                    if [ "${HTTP_CODE}" != "200" ]; then
-                        echo "WARNING: Health check did not return 200"
-                        exit 1
-                    fi
+                    ssh -o StrictHostKeyChecking=no \
+                    -i /var/jenkins_home/.ssh/deploy_key \
+                    ${K8S_USER}@${K8S_HOST} "
+                        kubectl exec -n ${APP_NAMESPACE} deploy/${IMAGE_NAME} -- \
+                        curl -f http://localhost:5000/healthz
+                    "
                 '''
             }
         }
