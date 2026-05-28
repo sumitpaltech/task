@@ -76,7 +76,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/id_rsa ${K8S_USER}@${K8S_HOST} "
+                    ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/deploy_key ${K8S_USER}@${K8S_HOST} "
                         set -e
                         echo 'Updating deployment image to ${FULL_IMAGE}'
                         kubectl -n ${APP_NAMESPACE} set image deployment/${IMAGE_NAME} ${IMAGE_NAME}=${FULL_IMAGE}
@@ -115,7 +115,7 @@ pipeline {
             echo "❌ Build #${BUILD_NUMBER} FAILED"
             echo "============================================"
             sh '''
-                ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/id_rsa ${K8S_USER}@${K8S_HOST} "
+                ssh -o StrictHostKeyChecking=no -i /var/jenkins_home/.ssh/deploy_key ${K8S_USER}@${K8S_HOST} "
                     kubectl -n ${APP_NAMESPACE} get pods
                     kubectl -n ${APP_NAMESPACE} describe deployment/${IMAGE_NAME} | tail -30 || true
                 " || true
