@@ -16,7 +16,7 @@ pipeline {
     environment {
         // These are set by Ansible / your environment
         REGISTRY_HOST  = "172.31.46.35:5000"   // Jenkins private IP : port (e.g. 10.0.0.5:5000)
-        K8S_HOST       = "13.200.144.20"        // K8s public IP
+        K8S_HOST       = "172.31.18.238"        // K8s public IP
         IMAGE_NAME     = "task-app"
         IMAGE_TAG      = "${BUILD_NUMBER}"
         FULL_IMAGE     = "${REGISTRY_HOST}/${IMAGE_NAME}:${IMAGE_TAG}"
